@@ -52,11 +52,6 @@ const updateBook = (title, author, bookId) => {
     type: 'PUT',
     url: 'https://mutably.herokuapp.com/books/' + bookId,
     data: {title, author},
-    success: () => {
-      console.log('success')
-      // $('li[data-book-id="'+bookId+'"]').remove()
-      // createBookRow(title, author, bookId)
-    }
   })
 }
 
@@ -89,11 +84,11 @@ const eventListeners = () => {
     $(this).siblings('p')[1].innerText = bookAuthor
   })
 
-  $('button.editButton, button.saveButton').on('click', () => {
-    $('button.editButton, button.saveButton').toggleClass('invisible')
-    $('p, input').toggleClass('invisible')
+  $('button.editButton, button.saveButton').on('click', function () {
+    $(this).toggleClass('invisible')
+    $(this).siblings('button.editButton, button.saveButton').toggleClass('invisible')
+    $(this).siblings('p, input').toggleClass('invisible')
   })
-
 
 }
 
