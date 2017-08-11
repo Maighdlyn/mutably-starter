@@ -11,6 +11,7 @@ createBookRow = (title, author, bookId) => {
       <input class="col-md-4 invisible"  value="${author}"/>
       <button class="deleteButton col-md-2">Delete</button>
     </li>`)
+  bookRowEventListeners()
 }
 
 displayAllBooks = (mutablyResponse) => {
@@ -25,17 +26,19 @@ $.ajax({
   url: 'https://mutably.herokuapp.com/books',
   success: (mutablyResponse) => {
     displayAllBooks(mutablyResponse)
-    eventListeners()
+    // eventListeners()
   }
 })
 
-const addBook = (title, author, bookId) => {
+const addBook = (title, author) => {
   event.preventDefault()
   $.ajax({
     type: 'POST',
     url: 'https://mutably.herokuapp.com/books',
-    data: {title, author, bookId},
-    success: createBookRow(title, author, bookId)
+    data: {title, author},
+    success: (data) => {
+      createBookRow(title, author, data._id)
+    }
   })
 }
 
@@ -55,18 +58,19 @@ const updateBook = (title, author, bookId) => {
   })
 }
 
+// Event Listeners:
 
+$('button.addBook').on('click', () => {
+  const newBookForm = $('.newBook').serializeArray()
 
-const eventListeners = () => {
-  $('button.addBook').on('click', () => {
-    const newBookForm = $('.newBook').serializeArray()
+  const newBookTitle = newBookForm[0].value
+  const newBookAuthor = newBookForm[1].value
 
-    const newBookTitle = newBookForm[0].value
-    const newBookAuthor = newBookForm[1].value
+  addBook(newBookTitle, newBookAuthor)
+  $('form.newBook')[0].reset()
+})
 
-    addBook(newBookTitle, newBookAuthor)
-  })
-
+const bookRowEventListeners = () => {
   $('.deleteButton').on('click', function () {
     const bookId = $(this).parent().attr('data-book-id')
     deleteBook(bookId)
@@ -74,7 +78,6 @@ const eventListeners = () => {
 
 
   $('button.saveButton').on('click', function () {
-    // $(this).toggleClass('invisible')
     const bookId = $(this).parent().attr('data-book-id')
     const bookTitle = $(this).siblings('input')[0].value
     const bookAuthor = $(this).siblings('input')[1].value
